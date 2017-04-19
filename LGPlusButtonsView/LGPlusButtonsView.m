@@ -311,6 +311,9 @@ typedef NS_ENUM(NSUInteger, LGPlusButtonDescriptionsPosition)
 {
     //NSLog(@"\nself = %@\nsuper = %@\nsubviews = %@\nsupersubviews = %@\n\n", self, [super hitTest:point withEvent:event], self.subviews, self.superview.subviews);
 
+    if (!self.userInteractionEnabled || ![self isShowing])
+        return nil;
+
     UIView *view = nil;
 
     for (LGPlusButton *button in _buttonsArray)
@@ -318,7 +321,12 @@ typedef NS_ENUM(NSUInteger, LGPlusButtonDescriptionsPosition)
         CGPoint newPoint = [self convertPoint:point toView:button];
 
         view = [button hitTest:newPoint withEvent:event];
-        if (view) break;
+        if (view) {
+            if (!button.isShowing)
+                return nil;
+            else
+                return view;
+        }
     }
 
     if (!view && _coverColor && !_coverView.isHidden)
